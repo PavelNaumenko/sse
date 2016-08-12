@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        var eventSource;
+
+        function start() { // при нажатии на Старт
+
+            if (!window.EventSource) {
+                alert('В этом браузере нет поддержки EventSource.');
+                return;
+            }
+
+            eventSource = new EventSource('/start/1');
+
+            eventSource.onerror = function(e) {
+                if (this.readyState == EventSource.CONNECTING) {
+                    log("Соединение порвалось, пересоединяемся...");
+                } else {
+                    log("Ошибка, состояние: " + this.readyState);
+                }
+            };
+
+            eventSource.onmessage = function(e) {
+                log(e.data);
+            };
+        }
+
+        function log(msg) {
+            document.getElementById("text").value = msg;
+        }
+
+    </script>
+</head>
+<body>
+    <input type="text" id="text" size="40">
+    <a href="/start/1" onclick="start()">Старт</a>
+    <a href="/sendOk/1">Ok</a>
+    <a href="/sendError/1">Error</a>
+</body>
+</html>
