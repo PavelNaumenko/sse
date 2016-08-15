@@ -1,8 +1,9 @@
 class Controller {
 
 	constructor() {
-
-		this.arr = [];
+		
+		// массив состояний
+		this.arr = {};
 
 	}
 
@@ -13,63 +14,46 @@ class Controller {
 			'Cache-Control': 'no-cache'
 		});
 
+        // id процесса
 		const id = req.params.id;
 
-		for(let i = 0; i < this.arr.length; i++) {
+        // проверка на существование процесса с указаным id
+		if (this.arr[id]) {
 
-			if (id == this.arr[i].id) {
-
-				res.write('data: Процес уже запущен!' + '\n\n');
-				return;
-
-			}
+			res.write('data: Процес уже запущен!' + '\n\n');
+			return;
 
 		}
 
-		this.arr.push({ id, status: 'Соединение создано!' });
-
-		const index = this.arr.length - 1;
-
+		this.arr[id] = 'Соединение создано!';
+		
 		let timer = setInterval(write.bind(this), 1000);
 
 		function write() {
 
-			res.write('data: ' + this.arr[index].status + '\n\n');
+			if (this.arr[id] === 'stop\n\n') {
+
+				clearInterval(timer);
+				res.end();
+				return;
+
+			}
+
+			res.write('data: ' + this.arr[id] + '\n\n');
 
 		}
 
 	}
 
-	sendOk(req, res) {
+	send(req, res) {
 
 		const id = req.params.id;
+		const status = req.body.status;
 
-		this.arr = this.arr.map((elem) => {
+		this.arr[id] = status + '\n\n';
 
-			if (id == elem.id) {
-				
-				return { id, status: 'Ok\n\n' };
-
-			}
-
-		});
-
-	}
-
-	sendError(req, res) {
-
-		const id = req.params.id;
-
-		this.arr = this.arr.map((elem) => {
-
-			if (id == elem.id) {
-
-				return { id, status: 'Error\n\n' };
-
-			}
-
-		});
-
+		res.status(200).send({ status });
+		
 	}
 
 }

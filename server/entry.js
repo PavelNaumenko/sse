@@ -30,7 +30,7 @@ app.all('/*', (req, res, next) => {
  */
 
 app.use(bodyParser.json({ limit: '50mb' }));
-app.use(express.static(path.join(__dirname, './view')));
+app.use(express.static(path.join(__dirname, '../view')));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use('/', router);
